@@ -1,13 +1,17 @@
 package com.example.myimagetextclient;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,16 +36,34 @@ public class HomeFragment extends Fragment {
     private boolean userRefresh = false;
     private final int LOAD_DELAY = 1000; // 模拟网络请求延迟
 
+    private TextView tabCommunity, tabBeijing, tabGroupBuy, tabFollow, tabRecommend;
+    private ImageView iconSearch;
+
     public HomeFragment() {
     }
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // 加载社区首页布局（fragment_home.xml）
-        return inflater.inflate(R.layout.fragment_home, container, false);
+
+        // 加载 fragment_home.xml
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        // 初始化顶部 TabBar
+        initTopTabs(view);
+
+        // 不要再调用 initRecyclerView(view)，因为 onViewCreated 里已经做了
+        return view;
     }
+//    @Nullable
+//    @Override
+//    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+//                             @Nullable Bundle savedInstanceState) {
+//        // 加载社区首页布局（fragment_home.xml）
+//        return inflater.inflate(R.layout.fragment_home, container, false);
+//    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -186,5 +208,33 @@ public class HomeFragment extends Fragment {
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+    }
+
+    private void initTopTabs(View view) {
+        tabBeijing = view.findViewById(R.id.tab_beijing);
+        tabGroupBuy = view.findViewById(R.id.tab_groupbuy);
+        tabFollow = view.findViewById(R.id.tab_follow);
+        tabCommunity = view.findViewById(R.id.tab_community);
+        tabRecommend = view.findViewById(R.id.tab_recommend);
+        iconSearch = view.findViewById(R.id.icon_search);
+
+        // 默认选中社区（高亮）
+        highlightTab(tabCommunity);
+
+        // 其余全部禁止点击
+        tabBeijing.setEnabled(false);
+        tabGroupBuy.setEnabled(false);
+        tabFollow.setEnabled(false);
+        tabRecommend.setEnabled(false);
+        iconSearch.setEnabled(false);
+    }
+
+    private void highlightTab(TextView selected) {
+        // 设置高亮
+        selected.setTextColor(Color.BLACK);
+        selected.setTextSize(18);
+
+        // 下划线（可选）
+        selected.setTypeface(Typeface.DEFAULT_BOLD);
     }
 }
