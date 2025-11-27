@@ -12,28 +12,31 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
     private static final int VIEW_TYPE_POST = 0;
     private static final int VIEW_TYPE_LOADING = 1;
+
     private List<Post> posts;
     private Context context;
+
     private SharedPreferences preferences;
 
     public PostAdapter(Context context, List<Post> posts) {
         this.context = context;
         this.posts = new ArrayList<>(posts);
-        // 获取SharedPreferences用于存储点赞/关注状态
         this.preferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
     }
 
     @Override
     public int getItemViewType(int position) {
-        // 判断当前项是作品数据还是加载中提示
         return posts.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_POST;
     }
 
@@ -42,12 +45,17 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return posts.size();
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(
+            @NonNull ViewGroup parent, int viewType) {
+
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
         if (viewType == VIEW_TYPE_POST) {
             View view = inflater.inflate(R.layout.item_post, parent, false);
             return new PostViewHolder(view);
+
         } else {
             View view = inflater.inflate(R.layout.item_loading, parent, false);
             return new LoadingViewHolder(view);
@@ -55,115 +63,146 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(
+            @NonNull RecyclerView.ViewHolder holder, int position) {
+
         if (holder instanceof PostViewHolder) {
             Post post = posts.get(position);
-            PostViewHolder postHolder = (PostViewHolder) holder;
-            // 设置封面图（裁剪显示）
-            if (!post.imageResIds.isEmpty()) {
-                postHolder.coverImage.setImageResource(post.imageResIds.get(0));
+            PostViewHolder vh = (PostViewHolder) holder;
+
+            /** -------------------------------
+             *  1. 显示封面（使用 Glide）
+             * -------------------------------*/
+            Glide.with(context)
+                    .load(post.imageUrl)
+                    .placeholder(R.drawable.cover_placeholder)
+                    .into(vh.coverImage);
+
+            /** -------------------------------
+             *  2. 动态设置瀑布流高度（按宽高比）
+             * -------------------------------*/
+            if (post.width > 0 && post.height > 0) {
+
+                float ratio = (float) post.height / post.width;
+
+                int screenWidth = context.getResources()
+                        .getDisplayMetrics().widthPixels;
+
+                int itemWidth = screenWidth / 2;
+
+                int realHeight = (int) (itemWidth * ratio);
+
+                ViewGroup.LayoutParams params = vh.coverImage.getLayoutParams();
+                params.height = realHeight;
+                vh.coverImage.setLayoutParams(params);
             }
-            // 随机调整封面高度，实现瀑布流错位效果
-            int mod = post.id % 3;
-            int heightDp;
-            if (mod == 0) {
-                heightDp = 240;
-            } else if (mod == 1) {
-                heightDp = 180;
-            } else {
-                heightDp = 200;
-            }
-            float density = context.getResources().getDisplayMetrics().density;
-            ViewGroup.LayoutParams params = postHolder.coverImage.getLayoutParams();
-            params.height = (int) (heightDp * density);
-            postHolder.coverImage.setLayoutParams(params);
-            // 设置标题（无标题则截取正文内容代替）
+
+            /** -------------------------------
+             *  3. 标题/正文摘要
+             * -------------------------------*/
             if (post.title != null && post.title.length() > 0) {
-                postHolder.titleText.setText(post.title);
+                vh.titleText.setText(post.title);
             } else {
-                String content = post.content;
-                String snippet = content.length() > 50 ? content.substring(0, 50) + "..." : content;
-                postHolder.titleText.setText(snippet);
-            }
-            // 作者头像和昵称
-            postHolder.avatarImage.setImageResource(post.avatarResId);
-            postHolder.authorText.setText(post.author);
-            // 点赞数量和状态
-            Set<String> likedSet = preferences.getStringSet("liked_posts", new HashSet<String>());
-            boolean liked = likedSet != null && likedSet.contains(String.valueOf(post.id));
-            postHolder.likeCountText.setText(String.valueOf(post.likeCount));
-            if (liked) {
-                postHolder.likeIcon.setImageResource(R.drawable.ic_liked);
-            } else {
-                postHolder.likeIcon.setImageResource(R.drawable.ic_like);
-            }
-            // 点赞按钮点击事件：更新点赞状态、本地持久化
-            postHolder.likeIcon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Set<String> likedPosts = preferences.getStringSet("liked_posts", new HashSet<String>());
-                    if (likedPosts == null) likedPosts = new HashSet<>();
-                    SharedPreferences.Editor editor = preferences.edit();
-                    if (likedPosts.contains(String.valueOf(post.id))) {
-                        // 已点赞 -> 取消点赞
-                        likedPosts.remove(String.valueOf(post.id));
-                        postHolder.likeIcon.setImageResource(R.drawable.ic_like);
-                        post.likeCount -= 1;
-                        postHolder.likeCountText.setText(String.valueOf(post.likeCount));
-                    } else {
-                        // 未点赞 -> 添加点赞
-                        likedPosts.add(String.valueOf(post.id));
-                        postHolder.likeIcon.setImageResource(R.drawable.ic_liked);
-                        post.likeCount += 1;
-                        postHolder.likeCountText.setText(String.valueOf(post.likeCount));
-                    }
-                    editor.putStringSet("liked_posts", likedPosts);
-                    editor.apply();
+                // 取正文前 30 字
+                if (post.content.length() > 30) {
+                    vh.titleText.setText(post.content.substring(0, 30) + "...");
+                } else {
+                    vh.titleText.setText(post.content);
                 }
+            }
+
+            /** -------------------------------
+             *  4. 作者头像 + 昵称（Glide 网络头像）
+             * -------------------------------*/
+            Glide.with(context)
+                    .load(post.authorAvatarUrl)
+                    .circleCrop()
+                    .placeholder(R.drawable.avatar_placeholder)
+                    .into(vh.avatarImage);
+
+            vh.authorText.setText(post.authorName);
+
+            /** -------------------------------
+             *  5. 点赞功能（SharedPreferences）
+             * -------------------------------*/
+            Set<String> likedSet =
+                    preferences.getStringSet("liked_posts", new HashSet<>());
+
+            boolean liked = likedSet.contains(post.postId);
+
+            vh.likeIcon.setImageResource(liked
+                    ? R.drawable.ic_liked
+                    : R.drawable.ic_like);
+
+            vh.likeCountText.setText(String.valueOf(post.likeCount));
+
+            vh.likeIcon.setOnClickListener(v -> {
+
+                Set<String> likedNow =
+                        preferences.getStringSet("liked_posts", new HashSet<>());
+                SharedPreferences.Editor editor = preferences.edit();
+
+                if (likedNow.contains(post.postId)) {
+                    likedNow.remove(post.postId);
+                    post.likeCount -= 1;
+                    vh.likeIcon.setImageResource(R.drawable.ic_like);
+
+                } else {
+                    likedNow.add(post.postId);
+                    post.likeCount += 1;
+                    vh.likeIcon.setImageResource(R.drawable.ic_liked);
+                }
+
+                vh.likeCountText.setText(String.valueOf(post.likeCount));
+
+                editor.putStringSet("liked_posts", likedNow);
+                editor.apply();
             });
-            // 卡片点击事件：打开作品详情页
-            postHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, DetailActivity.class);
-                    intent.putExtra("post_index", position);
-                    context.startActivity(intent);
-                }
+
+            /** -------------------------------
+             *  6. 点击进入详情页
+             * -------------------------------*/
+            vh.itemView.setOnClickListener(v -> {
+
+                Intent intent = new Intent(context, DetailActivity.class);
+                intent.putExtra("post_index", position);
+                context.startActivity(intent);
             });
         }
-        // LoadingViewHolder无需绑定数据
     }
 
-    // 刷新列表数据（下拉刷新时调用）
+    /** 刷新全量数据 */
     public void setPosts(List<Post> newPosts) {
-        this.posts.clear();
-        this.posts.addAll(newPosts);
+        posts.clear();
+        posts.addAll(newPosts);
         notifyDataSetChanged();
     }
 
-    // 追加列表数据（上滑加载更多时调用）
+    /** 分页追加更多数据 */
     public void addPosts(List<Post> newPosts) {
         int start = posts.size();
-        this.posts.addAll(newPosts);
+        posts.addAll(newPosts);
         notifyItemRangeInserted(start, newPosts.size());
     }
 
-    // 添加加载中尾部占位
+    /** 加载更多 footer */
     public void addLoadingFooter() {
-        this.posts.add(null);
+        posts.add(null);
         notifyItemInserted(posts.size() - 1);
     }
 
-    // 移除加载中尾部占位
+    /** 移除加载更多 footer */
     public void removeLoadingFooter() {
-        if (!posts.isEmpty() && posts.get(posts.size() - 1) == null) {
-            int removeIndex = posts.size() - 1;
-            posts.remove(removeIndex);
-            notifyItemRemoved(removeIndex);
+        if (posts.size() > 0 && posts.get(posts.size() - 1) == null) {
+            int index = posts.size() - 1;
+            posts.remove(index);
+            notifyItemRemoved(index);
         }
     }
 
-    // 作品项 ViewHolder
+    /** -------------------------------
+     *  ViewHolder: Post 项
+     * -------------------------------*/
     static class PostViewHolder extends RecyclerView.ViewHolder {
 
         ImageView coverImage;
@@ -185,11 +224,14 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-
-    // 加载中提示项 ViewHolder
+    /** -------------------------------
+     *  ViewHolder: Loading 项
+     * -------------------------------*/
     static class LoadingViewHolder extends RecyclerView.ViewHolder {
         public LoadingViewHolder(@NonNull View itemView) {
             super(itemView);
         }
     }
 }
+
+

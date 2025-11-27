@@ -37,6 +37,21 @@ dependencies {
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
 
+    implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
+    // Gson：用于解析 JSON
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    // OkHttp：用于发起网络请求
+    implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+
+    // Glide：用于加载网络图片（尤其是封面）
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+
+
     // 测试依赖（可留可删）
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
