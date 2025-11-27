@@ -1,50 +1,74 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="2.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <!-- 顶部作者栏 -->
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:gravity="center_vertical">
+        android:layout_height="56dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:background="@android:color/white">
 
+        <!-- 返回按钮 -->
         <ImageView
             android:id="@+id/detail_back"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_back"
             android:contentDescription="返回"
-            android:layout_marginEnd="8dp" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
+        <!-- 头像 -->
         <ImageView
             android:id="@+id/detail_avatar"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:src="@drawable/avatar1"
             android:contentDescription="作者头像"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toEndOf="@id/detail_back"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
+        <!-- 作者昵称 -->
         <TextView
             android:id="@+id/detail_author_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="作者昵称"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/detail_avatar"
+            app:layout_constraintEnd_toStartOf="@id/btn_follow"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
+        <!-- 关注按钮（右对齐） -->
         <Button
             android:id="@+id/btn_follow"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
-            android:text="关注"
+            android:minWidth="64dp"
+            android:padding="0dp"
             android:paddingLeft="12dp"
-            android:paddingRight="12dp" />
-    </LinearLayout>
+            android:paddingRight="12dp"
+            android:text="关注"
+            android:textSize="14sp"
+            android:textColor="#FF4D4F"
+            android:background="@drawable/follow_btn_bg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- 可滚动内容区（图片+文字） -->
     <ScrollView
