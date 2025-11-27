@@ -1,0 +1,8 @@
+<resources>
+    <!-- 应用主题：使用 MaterialComponents 无ActionBar 样式 -->
+    <style name="Theme.MyApp" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+    </style>
+</resources>

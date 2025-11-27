@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 顶部作者栏 -->
+    <LinearLayout
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/detail_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="返回"
+            android:layout_marginEnd="8dp" />
+
+        <ImageView
+            android:id="@+id/detail_avatar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/avatar1"
+            android:contentDescription="作者头像"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/detail_author_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="作者昵称"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btn_follow"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="关注"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp" />
+    </LinearLayout>
+
+    <!-- 可滚动内容区（图片+文字） -->
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/top_bar"
+        android:layout_above="@id/bottom_bar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- 图片轮播容器 -->
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+
+            <!-- 图片进度条（多图时显示） -->
+            <ProgressBar
+                android:id="@+id/image_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:max="100"
+                android:progress="0"
+                android:indeterminate="false"
+                android:visibility="gone" />
+
+            <!-- 标题 -->
+            <TextView
+                android:id="@+id/detail_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:padding="8dp" />
+
+            <!-- 正文（包含话题高亮） -->
+            <TextView
+                android:id="@+id/detail_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp" />
+
+            <!-- 发布时间 -->
+            <TextView
+                android:id="@+id/detail_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textSecondary"
+                android:textSize="12sp"
+                android:padding="8dp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- 底部交互栏 -->
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:gravity="center_vertical">
+
+        <!-- 评论输入框（仅UI展示） -->
+        <EditText
+            android:id="@+id/comment_input"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:hint="添加评论..."
+            android:paddingLeft="8dp"
+            android:background="@drawable/edit_text_bg"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:clickable="true" />
+
+        <ImageView
+            android:id="@+id/detail_like_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_like"
+            android:contentDescription="点赞"
+            android:layout_marginStart="8dp" />
+
+        <ImageView
+            android:id="@+id/detail_comment_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_comment"
+            android:contentDescription="评论"
+            android:layout_marginStart="8dp" />
+
+        <ImageView
+            android:id="@+id/detail_favorite_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_favorite"
+            android:contentDescription="收藏"
+            android:layout_marginStart="8dp" />
+
+        <ImageView
+            android:id="@+id/detail_share_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_share"
+            android:contentDescription="分享"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+</RelativeLayout>

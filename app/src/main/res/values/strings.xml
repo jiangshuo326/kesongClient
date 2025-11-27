@@ -1,0 +1,16 @@
+<resources>
+    <!-- 应用名称 -->
+    <string name="app_name">图文客户端示例</string>
+    <!-- 底部导航栏标签 -->
+    <string name="nav_home">首页</string>
+    <string name="nav_friends">朋友</string>
+    <string name="nav_camera">相机</string>
+    <string name="nav_messages">消息</string>
+    <string name="nav_profile">我</string>
+    <!-- 列表空态提示 -->
+    <string name="empty_message">加载失败</string>
+    <string name="retry">重试</string>
+    <!-- 关注按钮文本 -->
+    <string name="follow">关注</string>
+    <string name="following">已关注</string>
+</resources>
